@@ -1,0 +1,2 @@
+# laravelbase
+laravel的BaseController、BaseService
