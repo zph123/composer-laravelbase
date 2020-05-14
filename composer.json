@@ -1,0 +1,19 @@
+{
+    "name": "zph/laravelbase",
+    "description": "laravel的BaseController、BaseService",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Zhang Penghui",
+            "email": "767059157@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload":{
+        "psr-4":{
+            "Zph\\":"src/"
+        }
+    }
+}
