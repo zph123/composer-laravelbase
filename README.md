@@ -16,49 +16,79 @@ CREATE TABLE `demos` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 ```
-**新建路由访问ZphController**
+创建命令
 ```
-Route::get('/zph/createBase', 'ZphController@createBase');
-Route::get('/zph/createDemo', 'ZphController@createDemo');
+php artisan make:command ZphCreate
 ```
-
-**新建ZphController,来调用生成方法createBase()、createDemo()**
+打开app/Console/Commands/ZphCreate.php,替换成下面的代码
 ```
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Console\Commands;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Console\Command;
 use Zph\Zph;
 
-class ZphController extends Controller
+class ZphCreate extends Command
 {
-    /*
-     *生成app/Controllers/BaseController.php
-     *生成app/Services/BaseService.php
-    */
-    public function createBase()
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'zph:create';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Command description';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        return Zph::createBase(app_path());
+        parent::__construct();
     }
-    /*
-     *生成app/Controllers/DemoController.php
-     *生成app/Services/DemoService.php
-     *生成app/Models/Demo.php
-    */
-    public function createDemo()
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
     {
-        //如果表名为demos，那么$name的值为Demo
-        $name = 'Demo';
-        return Zph::createDemo(app_path(), $name);
+        $name = $this->ask('输入类名:(例如Base或者User)');
+        $name = ucfirst($name);
+        if ($name == "Base"){
+            Zph::createBase(app_path(),$this);
+        }else{
+            Zph::createDemo(app_path(), $name,$this);
+        }
     }
 }
 ```
-**新建路由访问新建DemoController**
+执行创建命令
 ```
-//查询
-Route::get('/demo', 'DemoController@index');
-//添加
-Route::post('/demo', 'DemoController@store');
+root@e0be1c8900b6:/var/www/zph/laravelDemo# php artisan zph:create
+
+ 输入类名:(例如Base或者User):
+ > Base
+
+/var/www/zph/laravelDemo/app/Http/Controllers/BaseController.php创建成功
+/var/www/zph/laravelDemo/app/Services/BaseService.php创建成功
+
+
+root@e0be1c8900b6:/var/www/zph/laravelDemo# php artisan zph:create
+
+ 输入类名:(例如Base或者User):
+ > demo
+
+/var/www/zph/laravelDemo/app/Models/Demo.php已经存在
+/var/www/zph/laravelDemo/app/Http/Controllers/DemoController.php已经存在
+/var/www/zph/laravelDemo/app/Http/Controllers/DemoController.php创建成功
 ```
-**通过浏览器或者postman来访问DemoController就可以了**
